@@ -19,7 +19,9 @@ struct parameter{
 	int user_name_length;
 	int group_name_length;
 	int file_size_length;
-}Limit_group;	
+}Limit_group;
+
+char path[512];	
 
 void getDirInfo(DIR *dir){
 	struct dirent *entry;
@@ -115,7 +117,7 @@ void printFileName(char *filename){
 	printf("%s", filename);
 }
 
-void printDir(char *dir, int depth, char ctl, char *path){
+void printDir(char *dir, int depth, char ctl){
 	DIR *dp;
 	struct dirent *entry;
 	struct stat statbuf;
@@ -127,23 +129,20 @@ void printDir(char *dir, int depth, char ctl, char *path){
 	}
 	if (chdir(dir) == -1){	//将dir设置为当前目录
 		printf("chdir: fail to set \" %s \"\n", dir);
+		return;
 	}
-	/*遍历目录更新输出信息控制结构中的数据和计算文件所占空间的总和*/
+
+	/*递归时输出目录路径*/
 	if (ctl == 'R' || ctl == 'r'){
-		if (depth > 1){
-			free(temp);
-			temp = (char *)malloc(sizeof(path) + sizeof(dir) + 1);
-			memset(temp, 0, sizeof(temp));
-			strcpy(temp, path);
-			strcat(temp, "/");
-			strcat(temp, dir);
-		}else {
-			temp = (char *)malloc(sizeof(path));
-			memset(temp, 0, sizeof(temp));
-			strcpy(temp, path);
+		/*通过getcwd函数获取目录路径*/
+		if (getcwd(path, sizeof(path)) == NULL){
+			printf("getcwd: fail\n");
+			return;
 		}
-		printf("%s:\n", temp);
+		printf("%s:\n", path);
 	}
+
+	/*遍历目录更新输出信息控制结构中的数据和计算文件所占空间的总和*/
 	if (ctl != 'R') getDirInfo(dp);
 
 	/*循环输出当前目录下的所有文件(包括目录)的信息*/
@@ -171,12 +170,12 @@ void printDir(char *dir, int depth, char ctl, char *path){
 	rewinddir(dp);	//设置dp目录流的读取位置回到开头处
 
 	/*递归输出当前目录下的各个子目录下的文件*/
-	while ((entry = readdir(dp)) != NULL){
+	while ((entry = readdir(dp)) != NULL && ctl != 'l'){
 		if (entry->d_type == DT_DIR){
 			//跳过两个目录项"."和".."
 			if (strcmp(entry->d_name, ".") == 0 || strcmp(entry->d_name, "..") == 0)
 				continue;
-			if (ctl == 'R' || ctl == 'r' || ctl == 'a')	printDir(entry->d_name, depth + 1, ctl, temp);
+			printDir(entry->d_name, depth + 1, ctl);
 			if (chdir("..") == -1){	//回到上层目录
 				printf("chdir: fail to set \" %s \"\n", dir);
 			}
@@ -194,7 +193,6 @@ void printDir(char *dir, int depth, char ctl, char *path){
 
 int main(int argc, char *argv[]){
 	char *dir = ".";
-	char *path = ".";
 	char ctl = 'l';
 	if (argc > 1){
 		if (argc > 3){
@@ -205,13 +203,11 @@ int main(int argc, char *argv[]){
 			ctl = argv[1][1];
 			if (argc == 3){
 				dir = argv[2];
-				path = argv[2];
 			}
 		}else{
 			dir = argv[1];
-			path = argv[1];
 		}
 	}
-	printDir(dir, 1, ctl, path);
+	printDir(dir, 1, ctl);
 	return 0;
 }
