@@ -11,7 +11,6 @@
 #include <time.h>
 
 #define KB 1024
-#define BLOCK_SIZE 512
 
 /*用来维护输出格式*/
 struct parameter{

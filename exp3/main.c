@@ -17,7 +17,7 @@
 */
 typedef struct Item{
 	char val[1024];
-	int is_last;
+	int num;
 }Item;
 
 union semun{
