@@ -19,7 +19,7 @@ void stop(int sig_no){
 	exit(0);
 }
 
-void killChild(int sig_no){
+void killChild(){
 	kill(p1, SIGUSR1);
 	kill(p2, SIGUSR2);
 }
@@ -48,13 +48,13 @@ int main(void){
 			x++;
 			sleep(1);
 		}
-	}else {
+	}else {	//父进程
 		p2 = fork();
 		if (p2 == -1){
 			perror("fork");
 			exit(EXIT_FAILURE);
 		}	
-		if (p2 == 0){
+		if (p2 == 0){	//p2进程
 			signal(SIGINT, SIG_IGN);
 			signal(SIGUSR2, stop);
 			char temp[30];
@@ -67,7 +67,7 @@ int main(void){
 				}
 			}
 			
-		}else{
+		}else{	//父进程
 			wait(NULL);
 			wait(NULL);
 			close(pipefd[0]);

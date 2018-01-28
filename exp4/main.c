@@ -64,7 +64,7 @@ void getDirInfo(DIR *dir){
 /*文件的权限信息和类型信息*/
 void printMode(unsigned short st_mode){
 	/*与文件类型屏蔽字S_IFMT与操作*/
-	switch(st_mode & S_IFDIR){
+	switch(st_mode & S_IFMT){
 		case S_IFIFO: putchar('p'); break;
 		case S_IFCHR: putchar('c'); break;
 		case S_IFDIR: putchar('d'); break;
@@ -120,7 +120,6 @@ void printDir(char *dir, int depth, char ctl){
 	DIR *dp;
 	struct dirent *entry;
 	struct stat statbuf;
-	char *temp = NULL;
 	/*调用opendir打开目录dir*/
 	if ((dp = opendir(dir)) == NULL){
 		printf("opendir: fail to open dir \" %s \"\n", dir);
@@ -179,9 +178,6 @@ void printDir(char *dir, int depth, char ctl){
 				printf("chdir: fail to set \" %s \"\n", dir);
 			}
 		}
-	}
-	if (temp != NULL){
-		free(temp);
 	}
 
 	/*关闭目录流*/

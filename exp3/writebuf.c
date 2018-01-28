@@ -82,7 +82,6 @@ void my_write(){
 		P(sem_id, 0);
 		P(sem_id, 2);
 		write_num = fread((p_map+in)->val, sizeof(char), 1024, f_in);
-		//strncpy((p_map+in)->val, temp, sizeof(temp));
 		(p_map+in)->num = write_num;
 		in = (in + 1) % SIZE;
 		V(sem_id, 2);

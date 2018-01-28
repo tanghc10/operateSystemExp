@@ -82,7 +82,6 @@ void my_read(){
 	while(1){
 		P(sem_id, 1);
 		P(sem_id, 2);
-		//strncpy(temp, (p_map+out)->val, sizeof(temp));
 		read_num = (p_map+out)->num;
 		int num = fwrite((p_map+out)->val, sizeof(char), read_num , f_out);
 		out = (out + 1) % SIZE;

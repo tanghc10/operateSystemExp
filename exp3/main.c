@@ -13,7 +13,7 @@
 /*
 	缓冲区结构
 	val: 数据
-	is_last: 是否是文件的结尾
+	num: 缓冲区中数据的长度
 */
 typedef struct Item{
 	char val[1024];
@@ -59,12 +59,12 @@ int main(int argc, char** argv){
 		return -1;
 	}
 	sem_args.val = 0;	//满缓冲区个数置为0
-	if (semctl(sem_id, 1, SETVAL, sem_args)){
+	if (semctl(sem_id, 1, SETVAL, sem_args) == -1){
 		perror("semctl error");
 		return -1;
 	}
 	sem_args.val = 1;	//互斥信号灯置为1
-	if (semctl(sem_id, 2, SETVAL, sem_args)){
+	if (semctl(sem_id, 2, SETVAL, sem_args) == -1){
 		perror("semctl error");
 		return -1;
 	}
